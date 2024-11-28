@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cadastro de Raças de Cachorros</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+<body onload="iniciar()">
+    <div class="container">
+        <h1>Cadastro de Raças de Cachorros</h1>
+        
+        <div class="mb-3">
+            <button class="btn btn-danger" onclick="limparBanco()">Limpar Banco</button>
+        </div>
+        <div class="d-flex mb-3">
+            <input type="text" id="searchCachorro" placeholder="Digite o nome da raça">
+            <button onclick="pesquisarCachorro()">Buscar</button>
+            
+        <button onclick="listarCachorros()">Listar</button>
+        <ul id="resultados"></ul>
+        </div>
+        <div id="resultadoBusca"></div>       
+        <button class="btn btn-success" onclick="importarRacasAPI()">Importar Raças da API</button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCachorro"
+            onclick="abrirCachorro(0)">Nova Raça</button>
+        <button class="btn btn-info" onclick="abrirModalLogs()">Ver Logs</button>
+        <table class="table mt-4">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Origem</th>
+                    <th>Temperamento</th>
+                    <th>Expectativa de Vida</th>
+                    <th>#</th>
+                    <th>#</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaCachorro">
+                
+            </tbody>
+        </table>
+    </div>
+
+        
+    
+    <div class="modal fade" id="modalLogs" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="tituloLogs">Logs de Busca</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID Log</th>
+                                <th>Data e Hora</th>
+                                <th>Número de Registros</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaLogs">
+                            <!-- Os logs serão inseridos aqui -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="modalCachorro" tabindex="-1" aria-labelledby="modalCachorroLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="tituloCachorro">Inserindo nova raça</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group mb-3">
+                            <label for="idCachorro">ID</label>
+                            <input type="text" class="form-control" id="idCachorro" disabled>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="nomeCachorro">Nome</label>
+                            <input type="text" class="form-control" id="nomeCachorro">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="origemCachorro">Origem</label>
+                            <input type="text" class="form-control" id="origemCachorro">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="temperamentoCachorro">Temperamento</label>
+                            <textarea class="form-control" id="temperamentoCachorro" rows="3"></textarea>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="lifespanCachorro">Expectativa de Vida</label>
+                            <input type="text" class="form-control" id="lifespanCachorro">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal"
+                        onclick="salvarCachorro()">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script src="app.js"></script>
+    <script>
+        function limparBanco() {
+            
+            if (confirm("Tem certeza de que deseja limpar o banco de dados?")) {
+                
+                fetch('php/limparBanco.php', {
+                    method: 'GET' 
+                })
+                .then(response => response.json()) 
+                .then(data => {
+                    
+                    if (data.status === "success") {
+                        alert(data.message); 
+                        
+                    } else {
+                        alert("Erro ao limpar o banco: " + data.message); 
+                    }
+                })
+                .catch(error => {
+                    
+                    console.error('Erro ao limpar o banco:', error);
+                    alert('Erro ao tentar limpar o banco. Tente novamente.');
+                });
+            }
+        }
+        
+        </script>
+
+        <script>
+            function abrirModalLogs() {
+    carregarLogs(); 
+    const modal = new bootstrap.Modal(document.getElementById('modalLogs')); 
+    modal.show(); 
+}
+
+function carregarLogs() {
+    fetch('php/listarLogs.php', { method: 'GET' })
+        .then(response => response.json())
+        .then(data => {
+            const tabelaLogs = document.getElementById('tabelaLogs');
+            tabelaLogs.innerHTML = '';
+
+            
+            if (data.status === 'success' && data.logs.length > 0) {
+                data.logs.forEach(log => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${log.idlog}</td>
+                        <td>${log.datahora}</td>
+                        <td>${log.numeroregistros}</td>
+                    `;
+                    tabelaLogs.appendChild(tr);
+                });
+            } else {
+                tabelaLogs.innerHTML = '<tr><td colspan="3">Nenhum log registrado.</td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error('Falha ao inserir:', error);
+            alert('Falha ao inserir.');
+        });
+}
+
+        </script>
+        
+</body>
+</html>
